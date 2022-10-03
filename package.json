@@ -1,0 +1,37 @@
+{
+  "name": "@sklinet/strapi-plugin-block-gallery",
+  "version": "1.0.0",
+  "description": "Creates gallery of Blocks, so you can see what they look like.",
+  "private": false,
+  "keywords": [
+    "strapi",
+    "blocks",
+    "gallery",
+    "block-gallery"
+  ],
+  "strapi": {
+    "name": "block-gallery",
+    "description": "Creates gallery of Blocks, so you can see what they look like.",
+    "kind": "plugin",
+    "displayName": "Block Gallery"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "@strapi/strapi": "^4.0.0"
+  },
+  "author": {
+    "name": "SKLINET s.r.o.",
+    "url": "https://github.com/SKLINET"
+  },
+  "maintainers": [
+    {
+      "name": "SKLINET s.r.o.",
+      "url": "https://github.com/SKLINET"
+    }
+  ],
+  "engines": {
+    "node": ">=14.x.x <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
