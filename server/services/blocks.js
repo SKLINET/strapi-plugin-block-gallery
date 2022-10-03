@@ -55,8 +55,14 @@ module.exports = ({ strapi }) => {
                     );
                 }
             }
+            const strapiLength = strapiComponentsArr.length;
+            const dbLength = dbBlocks.length;
 
-            return dbBlocks;
+            return {
+                blocks: dbBlocks,
+                strapiBlocksCount: strapiLength,
+                databaseBlocksCount: dbLength,
+            };
         },
     };
 };

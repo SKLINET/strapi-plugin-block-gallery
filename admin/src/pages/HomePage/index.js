@@ -29,12 +29,22 @@ const HomePage = () => {
     const { formatMessage } = useIntl();
 
     useEffect(async () => {
-        const blocksArr = await getBlocks();
-        if (blocksArr.length > 0) {
-            setBlocks(blocksArr);
-        }
-        if (blocksArr) {
-            setIsLoading(false);
+        const data = await getBlocks();
+        if (data.strapiBlocksCount !== data.databaseBlocksCount) {
+            const updatedData = await getBlocks();
+            if (updatedData.blocks) {
+                if (updatedData.blocks.length > 0) {
+                    setBlocks(updatedData.blocks);
+                }
+                setIsLoading(false);
+            }
+        } else {
+            if (data.blocks) {
+                if (data.blocks.length > 0) {
+                    setBlocks(data.blocks);
+                }
+                setIsLoading(false);
+            }
         }
     }, []);
 
@@ -66,6 +76,7 @@ const HomePage = () => {
                             background={"neutral0"}
                             padding={6}
                             hasRadius
+                            key={`block-item-${i}`}
                         >
                             <Flex
                                 direction={"column"}
@@ -136,14 +147,14 @@ const HomePage = () => {
                                                 onClose={() =>
                                                     setModalOpen(false)
                                                 }
-                                                labelledBy="title"
+                                                labelledBy='title'
                                             >
                                                 <ModalHeader>
                                                     <Typography
-                                                        fontWeight="bold"
-                                                        textColor="neutral800"
-                                                        as="h2"
-                                                        id="title"
+                                                        fontWeight='bold'
+                                                        textColor='neutral800'
+                                                        as='h2'
+                                                        id='title'
                                                     >
                                                         {item.displayName}
                                                     </Typography>
