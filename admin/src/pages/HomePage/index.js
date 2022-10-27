@@ -14,43 +14,55 @@ import { Badge } from "@strapi/design-system/Badge";
 import { Typography } from "@strapi/design-system/Typography";
 import { Link } from "@strapi/design-system/Link";
 import { useIntl } from "react-intl";
-import { getTrad } from "../../utils";
-import getBlocks from "../../api/getBlocks";
+import { getTrad, axiosInstance } from "../../utils";
 
 const ImageWrapper = styled.div`
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 `;
 
+const Image = styled.image`
+    height: 250px;
+    width: 100%;
+    background-image: url(${(props) => props.src});
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+`;
 const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [blocks, setBlocks] = useState([]);
+    const [blocks, setBlocks] = useState(null);
+    const [strapiBlocks, setStrapiBlocks] = useState(null);
+    const [databaseBlocks, setDatabaseBlocks] = useState(null);
     const [activeId, setActiveId] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
     const { formatMessage } = useIntl();
 
-    useEffect(async () => {
-        const data = await getBlocks();
-        if (data.strapiBlocksCount !== data.databaseBlocksCount) {
-            const updatedData = await getBlocks();
-            if (updatedData.blocks) {
-                if (updatedData.blocks.length > 0) {
-                    setBlocks(updatedData.blocks);
-                }
-                setIsLoading(false);
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await axiosInstance.get(`/block-gallery/blocks`);
+            if (data) {
+                setStrapiBlocks(data.data.strapiBlocks);
+                setDatabaseBlocks(data.data.databaseBlocks);
+                setBlocks(data.data.blocks);
             }
+        };
+
+        fetchData().catch((e) => console.log(e));
+        if (blocks && strapiBlocks === databaseBlocks) {
+            setIsLoading(false);
         } else {
-            if (data.blocks) {
-                if (data.blocks.length > 0) {
-                    setBlocks(data.blocks);
-                }
-                setIsLoading(false);
-            }
+            fetchData().catch((e) => console.log(e));
+            setIsLoading(false);
         }
-    }, []);
+    }, [strapiBlocks, databaseBlocks]);
 
-    if (isLoading) return <LoadingIndicatorPage />;
-
-    return (
+    return isLoading ? (
+        <LoadingIndicatorPage />
+    ) : (
         <Stack spacing={4} padding={3}>
             <Box paddingTop={4} paddingLeft={4}>
                 <Typography variant={"alpha"}>
@@ -68,7 +80,7 @@ const HomePage = () => {
                     })}
                 </Typography>
             </Box>
-            {blocks.length > 0 && (
+            {blocks && blocks.length > 0 && (
                 <Grid gridCols={3} gap={6} padding={3}>
                     {blocks.map((item, i) => (
                         <Box
@@ -132,10 +144,8 @@ const HomePage = () => {
                                 {item.image && item.image.url && (
                                     <>
                                         <ImageWrapper>
-                                            <img
+                                            <Image
                                                 src={item.image.url}
-                                                width={"100%"}
-                                                height={"100%"}
                                                 onClick={() => {
                                                     setActiveId(i);
                                                     setModalOpen(true);
