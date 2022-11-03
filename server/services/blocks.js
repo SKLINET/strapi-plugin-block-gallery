@@ -3,7 +3,7 @@
 module.exports = ({ strapi }) => {
     return {
         async getBlocks() {
-            const dbBlocks = await strapi.db
+            let dbBlocks = await strapi.db
                 .query("plugin::block-gallery.block")
                 .findMany({ populate: { image: "*" } }); // Blocks fetched from Blocks content-type (database)
             const components = strapi.components; // All Strapi components
@@ -31,8 +31,12 @@ module.exports = ({ strapi }) => {
                             where: { id: block.id },
                         });
                     console.log(
-                        `Block-Gallery: Deleting item: ${block.displayName}, this item isn't found in strapi.components`
+                        `Block-Gallery: Deleting item: ${block.displayName}, this item isn't found in strapi.components.`
                     );
+
+                    dbBlocks = await strapi.db
+                        .query("plugin::block-gallery.block")
+                        .findMany({ populate: { image: "*" } });
                 }
             }
 
@@ -53,15 +57,26 @@ module.exports = ({ strapi }) => {
                     console.log(
                         `Block-Gallery: Creating item: ${block.displayName}`
                     );
+
+                    dbBlocks = await strapi.db
+                        .query("plugin::block-gallery.block")
+                        .findMany({ populate: { image: "*" } });
                 }
             }
             const strapiLength = strapiComponentsArr.length;
-            const dbLength = dbBlocks.length;
+            let dbLength = dbBlocks.length;
+
+            if (dbLength !== strapiLength) {
+                const updatedDbBlocks = await strapi.db
+                    .query("plugin::block-gallery.block")
+                    .findMany();
+                dbLength = updatedDbBlocks.length;
+            }
 
             return {
                 blocks: dbBlocks,
-                strapiBlocksCount: strapiLength,
-                databaseBlocksCount: dbLength,
+                strapiBlocks: strapiLength,
+                databaseBlocks: dbLength,
             };
         },
     };

@@ -15,6 +15,9 @@ import { Typography } from "@strapi/design-system/Typography";
 import { Link } from "@strapi/design-system/Link";
 import { useIntl } from "react-intl";
 import { getTrad, axiosInstance } from "../../utils";
+import { Icon } from "@strapi/design-system/Icon";
+import EmptyDocuments from "@strapi/icons/EmptyDocuments";
+import { EmptyStateLayout } from "@strapi/design-system/EmptyStateLayout";
 
 const ImageWrapper = styled.div`
     cursor: pointer;
@@ -35,36 +38,16 @@ const Image = styled.image`
 const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [blocks, setBlocks] = useState(null);
-    const [strapiBlocks, setStrapiBlocks] = useState(null);
-    const [databaseBlocks, setDatabaseBlocks] = useState(null);
     const [activeId, setActiveId] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
     const { formatMessage } = useIntl();
 
     useEffect(() => {
-        const data = axiosInstance.get(`/block-gallery/blocks`);
-        if (data) {
-            data.then((res) => {
-                setStrapiBlocks(res.data.strapiBlocks);
-                setDatabaseBlocks(res.data.databaseBlocks);
-                setBlocks(res.data.blocks);
-            });
-            if (blocks && strapiBlocks === databaseBlocks) {
-                setIsLoading(false);
-            } else {
-                setIsLoading(true);
-                const secondaryData = axiosInstance.get(
-                    `/block-gallery/blocks`
-                );
-                secondaryData.then((res) => {
-                    setStrapiBlocks(res.data.strapiBlocks);
-                    setDatabaseBlocks(res.data.databaseBlocks);
-                    setBlocks(res.data.blocks);
-                });
-                setIsLoading(false);
-            }
-        }
-    }, [strapiBlocks, databaseBlocks]);
+        axiosInstance.get(`/block-gallery/blocks`).then(({ data }) => {
+            setBlocks(data.blocks || []);
+            setIsLoading(false);
+        });
+    }, []);
 
     return isLoading ? (
         <LoadingIndicatorPage />
@@ -86,7 +69,7 @@ const HomePage = () => {
                     })}
                 </Typography>
             </Box>
-            {blocks && blocks.length > 0 && (
+            {blocks && blocks.length > 0 ? (
                 <Grid gridCols={3} gap={6} padding={3}>
                     {blocks.map((item, i) => (
                         <Box
@@ -190,6 +173,23 @@ const HomePage = () => {
                         </Box>
                     ))}
                 </Grid>
+            ) : (
+                <Box padding={8} background='neutral100'>
+                    <EmptyStateLayout
+                        icon={
+                            <Icon
+                                width={`${100}px`}
+                                height={`${100}px`}
+                                color='white'
+                                as={EmptyDocuments}
+                            />
+                        }
+                        content={formatMessage({
+                            id: getTrad("Homepage.noItems"),
+                            defaultMessage: "No blocks were found !",
+                        })}
+                    />
+                </Box>
             )}
         </Stack>
     );
