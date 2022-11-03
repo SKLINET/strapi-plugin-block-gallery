@@ -89,7 +89,7 @@ or
 yarn build
 ```
 
-After starting your project, navigate into plugins homepage (from left panel), and your blocks will be generated. You will see all your generated blocks after refresh or next visit of the plugin.
+After starting your project, navigate into plugins homepage (from left panel), and your blocks will be generated.
 
 In order to add images or external links, update your records inside content-manager Blocks content-type.
 

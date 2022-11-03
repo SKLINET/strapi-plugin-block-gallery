@@ -4,5 +4,6 @@
     "Homepage.blockName": "Block",
     "Homepage.blockDisplayName": "Block name",
     "Homepage.linkText": "External link",
+    "Homepage.noItems": "No blocks were found",
     "plugin.name": "Blocks Gallery"
 }

@@ -4,5 +4,6 @@
     "Homepage.blockName": "Blok",
     "Homepage.blockDisplayName": "Název bloku",
     "Homepage.linkText": "Externý odkaz",
+    "Homepage.noItems": "Nebyly nalezeny žádné bloky",
     "plugin.name": "Galerie bloků"
 }

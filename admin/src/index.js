@@ -16,11 +16,8 @@ export default {
         id: getTrad("plugin.name"),
         defaultMessage: name,
       },
-      Component: async () => {
-        const component = await import(/* webpackChunkName: "[request]" */ './pages/App');
-
-        return component;
-      },
+      Component: async () =>
+        await import(/* webpackChunkName: "[request]" */ "./pages/App"),
       permissions: [
         // Uncomment to set the permissions of the plugin here
         // {

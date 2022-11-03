@@ -14,33 +14,44 @@ import { Badge } from "@strapi/design-system/Badge";
 import { Typography } from "@strapi/design-system/Typography";
 import { Link } from "@strapi/design-system/Link";
 import { useIntl } from "react-intl";
-import { getTrad } from "../../utils";
-import getBlocks from "../../api/getBlocks";
+import { getTrad, axiosInstance } from "../../utils";
+import { Icon } from "@strapi/design-system/Icon";
+import EmptyDocuments from "@strapi/icons/EmptyDocuments";
+import { EmptyStateLayout } from "@strapi/design-system/EmptyStateLayout";
 
 const ImageWrapper = styled.div`
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 `;
 
+const Image = styled.image`
+    height: 250px;
+    width: 100%;
+    background-image: url(${(props) => props.src});
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+`;
 const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const [blocks, setBlocks] = useState([]);
+    const [blocks, setBlocks] = useState(null);
     const [activeId, setActiveId] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
     const { formatMessage } = useIntl();
 
-    useEffect(async () => {
-        const blocksArr = await getBlocks();
-        if (blocksArr.length > 0) {
-            setBlocks(blocksArr);
-        }
-        if (blocksArr) {
+    useEffect(() => {
+        axiosInstance.get(`/block-gallery/blocks`).then(({ data }) => {
+            setBlocks(data.blocks || []);
             setIsLoading(false);
-        }
+        });
     }, []);
 
-    if (isLoading) return <LoadingIndicatorPage />;
-
-    return (
+    return isLoading ? (
+        <LoadingIndicatorPage />
+    ) : (
         <Stack spacing={4} padding={3}>
             <Box paddingTop={4} paddingLeft={4}>
                 <Typography variant={"alpha"}>
@@ -58,7 +69,7 @@ const HomePage = () => {
                     })}
                 </Typography>
             </Box>
-            {blocks.length > 0 && (
+            {blocks && blocks.length > 0 ? (
                 <Grid gridCols={3} gap={6} padding={3}>
                     {blocks.map((item, i) => (
                         <Box
@@ -66,6 +77,7 @@ const HomePage = () => {
                             background={"neutral0"}
                             padding={6}
                             hasRadius
+                            key={`block-item-${i}`}
                         >
                             <Flex
                                 direction={"column"}
@@ -121,10 +133,8 @@ const HomePage = () => {
                                 {item.image && item.image.url && (
                                     <>
                                         <ImageWrapper>
-                                            <img
+                                            <Image
                                                 src={item.image.url}
-                                                width={"100%"}
-                                                height={"100%"}
                                                 onClick={() => {
                                                     setActiveId(i);
                                                     setModalOpen(true);
@@ -136,14 +146,14 @@ const HomePage = () => {
                                                 onClose={() =>
                                                     setModalOpen(false)
                                                 }
-                                                labelledBy="title"
+                                                labelledBy='title'
                                             >
                                                 <ModalHeader>
                                                     <Typography
-                                                        fontWeight="bold"
-                                                        textColor="neutral800"
-                                                        as="h2"
-                                                        id="title"
+                                                        fontWeight='bold'
+                                                        textColor='neutral800'
+                                                        as='h2'
+                                                        id='title'
                                                     >
                                                         {item.displayName}
                                                     </Typography>
@@ -163,6 +173,23 @@ const HomePage = () => {
                         </Box>
                     ))}
                 </Grid>
+            ) : (
+                <Box padding={8} background='neutral100'>
+                    <EmptyStateLayout
+                        icon={
+                            <Icon
+                                width={`${100}px`}
+                                height={`${100}px`}
+                                color='white'
+                                as={EmptyDocuments}
+                            />
+                        }
+                        content={formatMessage({
+                            id: getTrad("Homepage.noItems"),
+                            defaultMessage: "No blocks were found !",
+                        })}
+                    />
+                </Box>
             )}
         </Stack>
     );
