@@ -42,21 +42,27 @@ const HomePage = () => {
     const { formatMessage } = useIntl();
 
     useEffect(() => {
-        const fetchData = async () => {
-            const data = await axiosInstance.get(`/block-gallery/blocks`);
-            if (data) {
-                setStrapiBlocks(data.data.strapiBlocks);
-                setDatabaseBlocks(data.data.databaseBlocks);
-                setBlocks(data.data.blocks);
+        const data = axiosInstance.get(`/block-gallery/blocks`);
+        if (data) {
+            data.then((res) => {
+                setStrapiBlocks(res.data.strapiBlocks);
+                setDatabaseBlocks(res.data.databaseBlocks);
+                setBlocks(res.data.blocks);
+            });
+            if (blocks && strapiBlocks === databaseBlocks) {
+                setIsLoading(false);
+            } else {
+                setIsLoading(true);
+                const secondaryData = axiosInstance.get(
+                    `/block-gallery/blocks`
+                );
+                secondaryData.then((res) => {
+                    setStrapiBlocks(res.data.strapiBlocks);
+                    setDatabaseBlocks(res.data.databaseBlocks);
+                    setBlocks(res.data.blocks);
+                });
+                setIsLoading(false);
             }
-        };
-
-        fetchData().catch((e) => console.log(e));
-        if (blocks && strapiBlocks === databaseBlocks) {
-            setIsLoading(false);
-        } else {
-            fetchData().catch((e) => console.log(e));
-            setIsLoading(false);
         }
     }, [strapiBlocks, databaseBlocks]);
 
