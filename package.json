@@ -1,6 +1,6 @@
 {
   "name": "@sklinet/strapi-plugin-block-gallery",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Creates gallery of Blocks, so you can see what they look like.",
   "private": false,
   "keywords": [
@@ -30,7 +30,7 @@
     }
   ],
   "engines": {
-    "node": ">=14.x.x <=16.x.x",
+    "node": ">=14.x.x <=20.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
